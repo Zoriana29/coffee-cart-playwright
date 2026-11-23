@@ -1,17 +1,20 @@
 {
   "name": "coffee-cart-playwright",
   "version": "1.0.0",
-  "description": "My first Playwright homework project for testing the Coffee Cards website",
+  "description": "UI tests for coffee-cart.app with Playwright and TypeScript",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "keywords": [
     "playwright",
     "e2e",
     "testing",
-    "coffee",
-    "cards",
-    "automation",
-    "homework"
+    "typescript",
+    "automation"
   ],
   "author": "Zoriana Dykunska",
   "license": "ISC",
