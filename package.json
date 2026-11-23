@@ -19,7 +19,7 @@
   "author": "Zoriana Dykunska",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.63.0",
+    "@playwright/test": "^1.65.1",
     "@types/node": "^26.5.1"
   }
 }
