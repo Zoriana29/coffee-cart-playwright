@@ -1,6 +1,6 @@
 # Coffee Cart – Playwright Tests
 
-[![Playwright Tests](https://github.com/Zoriana29/coffee-card-playwright/actions/workflows/playwright.yml/badge.svg)](https://github.com/Zoriana29/coffee-card-playwright/actions/workflows/playwright.yml)
+[![Playwright Tests](https://github.com/Zoriana29/coffee-cart-playwright/actions/workflows/playwright.yml/badge.svg)](https://github.com/Zoriana29/coffee-cart-playwright/actions/workflows/playwright.yml)
 
 UI tests for [coffee-cart.app](https://coffee-cart.app) using **Playwright + TypeScript**, running on **GitHub Actions** in Chromium, Firefox and WebKit.
 
@@ -20,8 +20,8 @@ UI tests for [coffee-cart.app](https://coffee-cart.app) using **Playwright + Typ
 ## Run the tests
 
 ```bash
-git clone https://github.com/Zoriana29/coffee-card-playwright.git
-cd coffee-card-playwright
+git clone https://github.com/Zoriana29/coffee-cart-playwright.git
+cd coffee-cart-playwright
 npm ci
 npx playwright install
 npx playwright test
@@ -65,7 +65,7 @@ git init
 git add .
 git commit -m "Add Playwright tests"
 git branch -M main
-git remote add origin https://github.com/<username>/coffee-card-playwright.git
+git remote add origin https://github.com/<username>/coffee-cart-playwright.git
 git push -u origin main
 ```
 

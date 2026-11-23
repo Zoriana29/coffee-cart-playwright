@@ -1,5 +1,5 @@
 {
-  "name": "coffee.card.playwright",
+  "name": "coffee-cart-playwright",
   "version": "1.0.0",
   "description": "My first Playwright homework project for testing the Coffee Cards website",
   "main": "index.js",
