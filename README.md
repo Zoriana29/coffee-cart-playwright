@@ -6,9 +6,11 @@ UI and API tests for [coffee-cart.app](https://coffee-cart.app), written in Play
 
 ## Tech stack
 
-Playwright · TypeScript · Node.js · GitHub Actions
+Playwright 1.65 · TypeScript · Node.js · GitHub Actions
 
 ## What is tested
+
+24 tests × 3 browsers (Chromium, Firefox, WebKit) = 72 runs.
 
 | Feature | Scenario | Type |
 |---|---|---|
