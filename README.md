@@ -2,20 +2,37 @@
 
 [![Playwright Tests](https://github.com/Zoriana29/coffee-cart-playwright/actions/workflows/playwright.yml/badge.svg)](https://github.com/Zoriana29/coffee-cart-playwright/actions/workflows/playwright.yml)
 
-UI tests for [coffee-cart.app](https://coffee-cart.app) using **Playwright + TypeScript**, running on **GitHub Actions** in Chromium, Firefox and WebKit.
+UI and API tests for [coffee-cart.app](https://coffee-cart.app), written in Playwright + TypeScript and run on GitHub Actions in Chromium, Firefox and WebKit.
+
+## Tech stack
+
+Playwright 1.65 · TypeScript · Node.js · GitHub Actions
 
 ## What is tested
 
+24 tests × 3 browsers (Chromium, Firefox, WebKit) = 72 runs.
+
 | Feature | Scenario | Type |
 |---|---|---|
-| Cart | 1 item shown after adding Espresso | Positive |
-| Cart | Espresso listed on cart page | Positive |
-| Cart | Total is $29.00 for Espresso + Cappuccino | Positive |
-| Cart | Empty cart message | Negative |
-| Checkout | Name and email kept in form | Positive |
-| Checkout | Success message after purchase | Positive |
-| Checkout | Empty form not submitted | Negative |
-| Checkout | Invalid email not submitted | Negative |
+| Cart | 1 item shown after adding Espresso | UI · Positive |
+| Cart | Espresso listed on cart page | UI · Positive |
+| Cart | Total is $29.00 for Espresso + Cappuccino | UI · Positive |
+| Cart | Empty cart message | UI · Negative |
+| Prices | Correct total for each of 9 coffees | UI · Data-driven |
+| Checkout | Name and email kept in form | UI · Positive |
+| Checkout | Success message after purchase | UI · Positive |
+| Checkout | Empty form not submitted, field marked invalid | UI · Negative |
+| Checkout | 3 invalid emails rejected | UI · Negative, data-driven |
+| API | `GET /list.json` returns 200 and JSON | API |
+| API | Every coffee has a name, positive price and recipe | API · Data validation |
+| API | Prices match the expected test data | API |
+| Mocked API | UI shows a coffee from mocked data | UI · Network mock |
+| Mocked API | Empty menu when the API returns no coffees | UI · Network mock, edge case |
+
+## Prerequisites
+
+- Node.js 20+ (LTS)
+- Git
 
 ## Run the tests
 
@@ -24,96 +41,54 @@ git clone https://github.com/Zoriana29/coffee-cart-playwright.git
 cd coffee-cart-playwright
 npm ci
 npx playwright install
-npx playwright test
+npm test
 npx playwright show-report
 ```
 
----
-
-## How this project was built
-
-### 1. Install tools (macOS)
+Run one browser only:
 
 ```bash
-# Homebrew (also installs Git)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Node.js and npm – needed to run Playwright
-brew install node
-
-# Check
-git -v && node -v && npm -v
+npx playwright test --project=chromium
 ```
 
-### 2. Create the project
+## Project structure
 
-```bash
-npm init playwright@latest   # one-time: creates config, package.json, .gitignore
-npx playwright install       # downloads the browsers
+```
+pages/
+  menu-page.ts          Page Object: menu locators and actions
+tests/
+  cart.spec.ts          cart and price UI tests
+  checkout.spec.ts      checkout UI tests
+  api.spec.ts           API tests for /list.json
+  network-mock.spec.ts  UI tests with mocked API data
+  test-data.ts          customer, invalid emails, coffee prices
+.github/workflows/      CI pipeline
+playwright.config.ts    baseURL, browsers, retries, reporters
 ```
 
-### 3. Write tests
+## Design decisions
 
-Tests are in `tests/` and named `*.spec.ts`. Run with `npx playwright test`.
+- **Locators:** `data-test` attributes and role-based locators, so tests stay stable when styling changes.
+- **Page Object Model:** menu locators and actions live in `pages/menu-page.ts`, so a changed locator is fixed in one place.
+- **Test data** in `tests/test-data.ts`, shared by UI and API tests; no personal data in tests.
+- **Shared setup** with `test.beforeEach`; **data-driven tests** generated from arrays with a `for` loop.
+- **Negative tests** check that the form stays open and the field is invalid, not only that the success message is missing.
+- **API tests** use Playwright's `request` fixture; **network mocking** with `page.route` tests the UI with controlled data.
+- **baseURL** in `playwright.config.ts`: the site address lives in one place; tests use `page.goto('/')`.
+- **CI settings:** retries and a single worker only on CI; a trace is recorded on the first retry for debugging.
+- **Reports:** the HTML report is saved as a CI artifact (Actions → run → Artifacts); the GitHub reporter shows failures on the run page.
 
-### 4. Push to GitHub
+## Notes
 
-Create an empty repo on GitHub, then:
-
-```bash
-git init
-git add .
-git commit -m "Add Playwright tests"
-git branch -M main
-git remote add origin https://github.com/<username>/coffee-cart-playwright.git
-git push -u origin main
-```
-
-`node_modules/` and test reports are excluded by `.gitignore`.
-
-### 5. Set up GitHub Actions
-
-```bash
-mkdir -p .github/workflows
-touch .github/workflows/playwright.yml
-```
-
-Paste the workflow from the [Playwright CI docs](https://playwright.dev/docs/ci-intro) (see [playwright.yml](.github/workflows/playwright.yml)). It runs tests on every push to `main` and saves the HTML report.
-
-Add the GitHub reporter in `playwright.config.ts` to see failures on the run page:
-
-```ts
-reporter: [['html'], ['github']],
-```
-
-Push, then open the **Actions** tab to watch the run.
-
-### 6. Improve structure
-
-- **baseURL** in `playwright.config.ts` – site address in one place:
-  ```ts
-  use: { baseURL: 'https://coffee-cart.app' }
-  ```
-  Tests then use `page.goto('/')`.
-- **Grouped tests** into `cart.spec.ts` and `checkout.spec.ts` with `test.describe`.
-
-### 7. Add negative tests
-
-Check that the form rejects empty fields and an invalid email, and that an empty cart shows a message.
-
----
-
-## Troubleshooting
-
-| Problem | Fix |
-|---|---|
-| `Executable doesn't exist` | Run `npx playwright install` |
-| Firefox won't launch locally on macOS | Run `--project=chromium --project=webkit` locally; Firefox passes in CI |
-| `Node.js 20 is deprecated` warning in CI | Update actions to the latest versions (`@v6`) |
-| CI fails with `invalid URL` | `playwright.config.ts` wasn't committed – check `git status` before committing |
+Tests run against the live public site coffee-cart.app, so a change on the site can fail a test without a bug in the test code.
 
 ## Next steps
 
-- [ ] Reusable helpers / Page Object Model
-- [ ] Test data in a separate file
-- [ ] API tests
+- [x] API tests with Playwright `request`
+- [x] Test data in a separate file
+- [x] Shared setup with `beforeEach`
+- [x] Page Object Model for the menu
+- [x] Network mocking
+- [ ] Page Objects for cart and checkout
+- [ ] Accessibility checks with axe-core
+- [ ] Visual comparison with `toHaveScreenshot`
